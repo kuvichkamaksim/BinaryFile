@@ -30,17 +30,15 @@ def parseBMP(fileName):
     bmp.realWidth = 3 * bmp.width + (4 - ((3 * bmp.width) % 4)) % 4;
     bmp.area = bmp.realWidth * bmp.height
     openedBmp.seek(54)
-    print bmp.area
-    # for k in range(bmp.height):
-    #     bmp.pixels.append([])
-    # for i in range(bmp.height):
-    #     for j in range(bmp.realWidth):
-    #         red = unpack('B', openedBmp.read(1))[0]
-    #         green = unpack('B', openedBmp.read(1))[0]
-    #         blue = unpack('B', openedBmp.read(1))[0]
-    #         pixel = PixelData(red, green, blue)
-    #         print red, green, blue
-    #         bmp.pixels[i].append(pixel)
+    for k in range(bmp.height):
+        bmp.pixels.append([])
+    for i in range(bmp.height):
+        for j in range(bmp.width):
+            red = unpack('B', openedBmp.read(1))[0]
+            green = unpack('B', openedBmp.read(1))[0]
+            blue = unpack('B', openedBmp.read(1))[0]
+            pixel = PixelData(red, green, blue)
+            bmp.pixels[i].append(pixel)
     return bmp
 
 example = parseBMP("duck.bmp")
