@@ -67,8 +67,12 @@ def interpolate(p1, p2, dif):
     a = []
     for i in range(dif-1):
         coef = (i+1.0)/dif
-        print coef, i, dif
-        a.append(PixelData(int((p1.red+p2.red)*coef), int((p1.green+p2.green)*coef), int((p1.blue+p2.blue)*coef)))
+        # print coef, i, dif
+        redComp = int(min(p1.red, p2.red) +math.fabs(p1.red-p2.red)*coef)
+        greenComp = int(min(p1.green, p2.green) +math.fabs(p1.green-p2.green)*coef)
+        blueComp = int(min(p1.blue, p2.blue) +math.fabs(p1.blue-p2.blue)*coef)
+        # print redComp, greenComp, blueComp
+        a.append(PixelData(redComp, greenComp, blueComp ))
     return a
 
 def fillImg(bmp, cof):
