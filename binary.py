@@ -1,9 +1,10 @@
 import sys
+import os
+import struct
 from struct import unpack, pack
 import math
 
-increase = 3
-resultFile = open("duck"+str(increase)+".bmp", 'w')
+increase = 2
 
 class PixelData:
     def __init__(self, red, green, blue):
@@ -38,8 +39,8 @@ def parseBMP(fileName):
 
 
 def createNewBmp(bmp, cof):
-    newWidth = cof*bmp.width
-    newHeight = cof*bmp.height
+    newWidth = int(cof*bmp.width)
+    newHeight = int(cof*bmp.height)
     fileName = "result"+str(cof)+".bmp"
     newBmp = BMPFile(fileName)
 
@@ -59,46 +60,46 @@ def createNewBmp(bmp, cof):
             newBmp.pixels[k].append(PixelData(0,0,0))
     for i in range(bmp.height):
         for j in range(bmp.width):
-            newBmp.pixels[cof*i][cof*j] = bmp.pixels[i][j]
+            newBmp.pixels[int(cof*i)][int(cof*j)] = bmp.pixels[i][j]
     return newBmp
 
 
 def interpolate(p1, p2, dif):
+    dif = int(dif)
     a = []
     for i in range(dif-1):
         coef = (i+1.0)/dif
-        # print coef, i, dif
-        redComp = int(min(p1.red, p2.red) +math.fabs(p1.red-p2.red)*coef)
-        greenComp = int(min(p1.green, p2.green) +math.fabs(p1.green-p2.green)*coef)
-        blueComp = int(min(p1.blue, p2.blue) +math.fabs(p1.blue-p2.blue)*coef)
-        # print redComp, greenComp, blueComp
+        redComp = int(max(p1.red, p2.red) -math.fabs(p1.red-p2.red)*coef)
+        greenComp = int(max(p1.green, p2.green) -math.fabs((p1.green-p2.green))*coef)
+        blueComp = int(max(p1.blue, p2.blue) -math.fabs(p1.blue-p2.blue)*coef)
         a.append(PixelData(redComp, greenComp, blueComp ))
     return a
 
 def fillImg(bmp, cof):
     for i in range(bmp.height):
-        for j in range(bmp.width//cof):
+        for j in range(int(bmp.width//cof)):
             if cof*(j+1) < bmp.width:
-                temp = interpolate(bmp.pixels[i][cof*j], bmp.pixels[i][cof*(j+1)], cof)
+                temp = interpolate(bmp.pixels[i][int(cof*j)], bmp.pixels[i][int(cof*(j+1))], cof)
                 for k in range(len(temp)):
-                    bmp.pixels[i][j*cof+k+1] = temp[k]
+                    bmp.pixels[i][int(j*cof)+k+1] = temp[k]
 
-    for i in range(bmp.height//cof):
+    for i in range(int(bmp.height//cof)):
         for j in range(bmp.width):
             if cof*(i+1) < bmp.height:
-                temp = interpolate(bmp.pixels[i*cof][j], bmp.pixels[cof*(i+1)][j], cof)
+                temp = interpolate(bmp.pixels[int(i*cof)][j], bmp.pixels[int(cof*(i+1))][j], cof)
                 for k in range(len(temp)):
-                    bmp.pixels[i*cof+k+1][j] = temp[k]
+                    bmp.pixels[int(i*cof)+k+1][j] = temp[k]
 
 def writeInBmp(bmp):
+    padding = bmp.width%4
     resultFile = open(bmp.filename, 'w')
     resultFile.write(bmp.header)
-    # resultFile.write(map(chr, (p.red, p.green, p.blue))
-    #                  for p in row for row in bmp.pixels)
     for row in bmp.pixels:
         for pixel in row:
             components = pixel.red, pixel.green, pixel.blue
             resultFile.write(''.join(map(chr, components)))
+        for i in range(padding):
+            resultFile.write(struct.pack('B', 0))
 
 example = parseBMP("duck.bmp")
 res = createNewBmp(example, increase)
