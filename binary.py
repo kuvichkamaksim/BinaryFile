@@ -92,12 +92,19 @@ def fillImg(bmp, cof):
 
     for i in range(bmp.height):
         for j in range(bmp.width):
-            if j+1 <= bmp.width:
+            if j+1 < bmp.width:
                 if bmp.pixels[i][j].red == 0 and bmp.pixels[i][j].green == 0 and bmp.pixels[i][j].blue == 0:
-                    temp = interpolate(bmp.pixels[i][j-1], bmp.pixels[i][j+1], 1)
-                    # print temp
+                    temp = interpolate(bmp.pixels[i][j-1], bmp.pixels[i][j+1], 2)
                     for k in range(len(temp)):
-                        bmp.pixels[i][j+k] = temp[k] 
+                        bmp.pixels[i][j+k] = temp[k]
+
+    for i in range(bmp.height):
+        for j in range(bmp.width):
+            if i+1 < bmp.heighth:
+                if bmp.pixels[i][j].red == 0 and bmp.pixels[i][j].green == 0 and bmp.pixels[i][j].blue == 0:
+                    temp = interpolate(bmp.pixels[i-1][j], bmp.pixels[i+1][j], 2)
+                    for k in range(len(temp)):
+                        bmp.pixels[i+k][j] = temp[k]
 
 def writeInBmp(bmp):
     padding = bmp.width%4
