@@ -4,7 +4,7 @@ import struct
 from struct import unpack, pack
 import math
 
-increase = 2
+increase = float(sys.argv[1])
 
 class PixelData:
     def __init__(self, red, green, blue):
@@ -89,6 +89,15 @@ def fillImg(bmp, cof):
                 temp = interpolate(bmp.pixels[int(i*cof)][j], bmp.pixels[int(cof*(i+1))][j], cof)
                 for k in range(len(temp)):
                     bmp.pixels[int(i*cof)+k+1][j] = temp[k]
+
+    for i in range(bmp.height):
+        for j in range(bmp.width):
+            if j+1 <= bmp.width:
+                if bmp.pixels[i][j].red == 0 and bmp.pixels[i][j].green == 0 and bmp.pixels[i][j].blue == 0:
+                    temp = interpolate(bmp.pixels[i][j-1], bmp.pixels[i][j+1], 1)
+                    # print temp
+                    for k in range(len(temp)):
+                        bmp.pixels[i][j+k] = temp[k] 
 
 def writeInBmp(bmp):
     padding = bmp.width%4
